@@ -460,30 +460,14 @@ verify-import-restrictions: $(IMPORT_BOSS) ## Verify import restrictions with im
 clusterctl: ## Build the clusterctl binary
 	go build -trimpath -ldflags "$(LDFLAGS)" -o $(BIN_DIR)/clusterctl sigs.k8s.io/cluster-api/cmd/clusterctl
 
-ALL_MANAGERS = core kubeadm-bootstrap kubeadm-control-plane docker-infrastructure in-memory-infrastructure
+ALL_MANAGERS = in-memory-infrastructure
 
 .PHONY: managers
 managers: $(addprefix manager-,$(ALL_MANAGERS)) ## Run all manager-* targets
 
-.PHONY: manager-core
-manager-core: ## Build the core manager binary into the ./bin folder
-	go build -trimpath -ldflags "$(LDFLAGS)" -o $(BIN_DIR)/manager sigs.k8s.io/cluster-api
-
-.PHONY: manager-kubeadm-bootstrap
-manager-kubeadm-bootstrap: ## Build the kubeadm bootstrap manager binary into the ./bin folder
-	go build -trimpath -ldflags "$(LDFLAGS)" -o $(BIN_DIR)/kubeadm-bootstrap-manager sigs.k8s.io/cluster-api/bootstrap/kubeadm
-
-.PHONY: manager-kubeadm-control-plane
-manager-kubeadm-control-plane: ## Build the kubeadm control plane manager binary into the ./bin folder
-	go build -trimpath -ldflags "$(LDFLAGS)" -o $(BIN_DIR)/kubeadm-control-plane-manager sigs.k8s.io/cluster-api/controlplane/kubeadm
-
-.PHONY: manager-docker-infrastructure
-manager-docker-infrastructure: ## Build the docker infrastructure manager binary into the ./bin folder
-	cd $(CAPD_DIR); go build -trimpath -ldflags "$(LDFLAGS)" -o ../../../$(BIN_DIR)/capd-manager sigs.k8s.io/cluster-api/test/infrastructure/docker
-
 .PHONY: manager-in-memory-infrastructure
 manager-in-memory-infrastructure: ## Build the in-memory-infrastructure infrastructure manager binary into the ./bin folder
-	cd $(CAPIM_DIR); go build -trimpath -ldflags "$(LDFLAGS)" -o ../../../$(BIN_DIR)/capim-manager sigs.k8s.io/cluster-api/test/infrastructure/inmemory
+	cd $(CAPIM_DIR); go build -trimpath -ldflags "$(LDFLAGS)" -o ../../../$(BIN_DIR)/capim-manager ./main.go
 
 .PHONY: docker-pull-prerequisites
 docker-pull-prerequisites:
@@ -774,11 +758,8 @@ release-manifests: $(RELEASE_DIR) $(KUSTOMIZE) $(RUNTIME_OPENAPI_GEN) ## Build t
 
 .PHONY: release-manifests-dev
 release-manifests-dev: $(RELEASE_DIR) $(KUSTOMIZE) ## Build the development manifests and copies them in the release folder
-	cd $(CAPD_DIR); $(KUSTOMIZE) build config/default > ../../../$(RELEASE_DIR)/infrastructure-components-development.yaml
-	cp $(CAPD_DIR)/templates/* $(RELEASE_DIR)/
 	cd $(CAPIM_DIR); $(KUSTOMIZE) build config/default > ../../../$(RELEASE_DIR)/infrastructure-components-in-memory-development.yaml
 	cp $(CAPIM_DIR)/templates/* $(RELEASE_DIR)/
-	cd $(TEST_EXTENSION_DIR); $(KUSTOMIZE) build config/default > ../../$(RELEASE_DIR)/runtime-extension-components-development.yaml
 
 .PHONY: release-binaries
 release-binaries: ## Build the binaries to publish with a release
