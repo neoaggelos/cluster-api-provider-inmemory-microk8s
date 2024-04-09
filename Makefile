@@ -269,94 +269,14 @@ help:  # Display this help
 
 ##@ generate:
 
-ALL_GENERATE_MODULES = core kubeadm-bootstrap kubeadm-control-plane docker-infrastructure in-memory-infrastructure test-extension
+ALL_GENERATE_MODULES = in-memory-infrastructure
 
 .PHONY: generate
-generate: ## Run all generate-manifests-*, generate-go-deepcopy-*, generate-go-conversions-* and generate-go-openapi targets
-	$(MAKE) generate-modules generate-manifests generate-go-deepcopy generate-go-conversions generate-go-openapi generate-metrics-config
+generate: ## Run all generate-manifests-*, generate-go-deepcopy-* and generate-go-conversions-* targets
+	$(MAKE) generate-modules generate-manifests generate-go-deepcopy generate-go-conversions
 
 .PHONY: generate-manifests
 generate-manifests: $(addprefix generate-manifests-,$(ALL_GENERATE_MODULES)) ## Run all generate-manifests-* targets
-
-.PHONY: generate-manifests-core
-generate-manifests-core: $(CONTROLLER_GEN) $(KUSTOMIZE) ## Generate manifests e.g. CRD, RBAC etc. for core
-	$(MAKE) clean-generated-yaml SRC_DIRS="./config/crd/bases,./config/webhook/manifests.yaml"
-	$(CONTROLLER_GEN) \
-		paths=./ \
-		paths=./api/... \
-		paths=./internal/apis/core/... \
-		paths=./internal/controllers/... \
-		paths=./internal/webhooks/... \
-		paths=./$(EXP_DIR)/api/... \
-		paths=./$(EXP_DIR)/internal/controllers/... \
-		paths=./$(EXP_DIR)/internal/webhooks/... \
-		paths=./$(EXP_DIR)/addons/api/... \
-		paths=./$(EXP_DIR)/addons/internal/controllers/... \
-		paths=./$(EXP_DIR)/addons/internal/webhooks/... \
-		paths=./$(EXP_DIR)/ipam/api/... \
-		paths=./$(EXP_DIR)/ipam/internal/webhooks/... \
-		paths=./$(EXP_DIR)/runtime/api/... \
-		paths=./$(EXP_DIR)/runtime/internal/controllers/... \
-		crd:crdVersions=v1 \
-		rbac:roleName=manager-role \
-		output:crd:dir=./config/crd/bases \
-		output:webhook:dir=./config/webhook \
-		webhook
-	$(CONTROLLER_GEN) \
-		paths=./cmd/clusterctl/api/... \
-		crd:crdVersions=v1 \
-		output:crd:dir=./cmd/clusterctl/config/crd/bases
-	$(KUSTOMIZE) build $(CLUSTERCTL_MANIFEST_DIR)/crd > $(CLUSTERCTL_MANIFEST_DIR)/manifest/clusterctl-api.yaml
-
-.PHONY: generate-manifests-kubeadm-bootstrap
-generate-manifests-kubeadm-bootstrap: $(CONTROLLER_GEN) ## Generate manifests e.g. CRD, RBAC etc. for kubeadm bootstrap
-	$(MAKE) clean-generated-yaml SRC_DIRS="./bootstrap/kubeadm/config/crd/bases,./bootstrap/kubeadm/config/webhook/manifests.yaml"
-	$(CONTROLLER_GEN) \
-		paths=./bootstrap/kubeadm \
-		paths=./bootstrap/kubeadm/api/... \
-		paths=./bootstrap/kubeadm/internal/controllers/... \
-		paths=./bootstrap/kubeadm/internal/webhooks/... \
-		paths=./internal/apis/bootstrap/kubeadm/... \
-		crd:crdVersions=v1 \
-		rbac:roleName=manager-role \
-		output:crd:dir=./bootstrap/kubeadm/config/crd/bases \
-		output:rbac:dir=./bootstrap/kubeadm/config/rbac \
-		output:webhook:dir=./bootstrap/kubeadm/config/webhook \
-		webhook
-
-.PHONY: generate-manifests-kubeadm-control-plane
-generate-manifests-kubeadm-control-plane: $(CONTROLLER_GEN) ## Generate manifests e.g. CRD, RBAC etc. for kubeadm control plane
-	$(MAKE) clean-generated-yaml SRC_DIRS="./controlplane/kubeadm/config/crd/bases,./controlplane/kubeadm/config/webhook/manifests.yaml"
-	$(CONTROLLER_GEN) \
-		paths=./controlplane/kubeadm \
-		paths=./controlplane/kubeadm/api/... \
-		paths=./controlplane/kubeadm/internal/controllers/... \
-		paths=./controlplane/kubeadm/internal/webhooks/... \
-		paths=./internal/apis/controlplane/kubeadm/... \
-		crd:crdVersions=v1 \
-		rbac:roleName=manager-role \
-		output:crd:dir=./controlplane/kubeadm/config/crd/bases \
-		output:rbac:dir=./controlplane/kubeadm/config/rbac \
-		output:webhook:dir=./controlplane/kubeadm/config/webhook \
-		webhook
-
-.PHONY: generate-manifests-docker-infrastructure
-generate-manifests-docker-infrastructure: $(CONTROLLER_GEN) ## Generate manifests e.g. CRD, RBAC etc. for docker infrastructure provider
-	$(MAKE) clean-generated-yaml SRC_DIRS="$(CAPD_DIR)/config/crd/bases,$(CAPD_DIR)/config/webhook/manifests.yaml"
-	cd $(CAPD_DIR); $(CONTROLLER_GEN) \
-		paths=./ \
-		paths=./api/... \
-		paths=./$(EXP_DIR)/api/... \
-		paths=./$(EXP_DIR)/internal/controllers/... \
-		paths=./$(EXP_DIR)/internal/webhooks/... \
-		paths=./internal/controllers/... \
-		paths=./internal/webhooks/... \
-		crd:crdVersions=v1 \
-		rbac:roleName=manager-role \
-		output:crd:dir=./config/crd/bases \
-		output:webhook:dir=./config/webhook \
-		webhook
-
 
 .PHONY: generate-manifests-in-memory-infrastructure
 generate-manifests-in-memory-infrastructure: $(CONTROLLER_GEN) ## Generate manifests e.g. CRD, RBAC etc. for in-memory infrastructure provider
@@ -372,54 +292,9 @@ generate-manifests-in-memory-infrastructure: $(CONTROLLER_GEN) ## Generate manif
 		output:webhook:dir=./config/webhook \
 		webhook
 
-.PHONY: generate-manifests-test-extension
-generate-manifests-test-extension: $(CONTROLLER_GEN) ## Generate manifests e.g. RBAC for test-extension provider
-	cd ./test/extension; $(CONTROLLER_GEN) \
-		paths=./... \
-		output:rbac:dir=./config/rbac \
-		rbac:roleName=manager-role
-
 .PHONY: generate-go-deepcopy
 generate-go-deepcopy:  ## Run all generate-go-deepcopy-* targets
 	$(MAKE) $(addprefix generate-go-deepcopy-,$(ALL_GENERATE_MODULES))
-
-.PHONY: generate-go-deepcopy-core
-generate-go-deepcopy-core: $(CONTROLLER_GEN) ## Generate deepcopy go code for core
-	$(MAKE) clean-generated-deepcopy SRC_DIRS="./api,./$(EXP_DIR)/api,./$(EXP_DIR)/addons/api,./$(EXP_DIR)/runtime/api,./$(EXP_DIR)/runtime/hooks/api"
-	$(CONTROLLER_GEN) \
-		object:headerFile=./hack/boilerplate/boilerplate.generatego.txt \
-		paths=./api/... \
-		paths=./$(EXP_DIR)/api/... \
-		paths=./$(EXP_DIR)/addons/api/... \
-		paths=./$(EXP_DIR)/ipam/api/... \
-		paths=./$(EXP_DIR)/runtime/api/... \
-		paths=./$(EXP_DIR)/runtime/hooks/api/... \
-		paths=./internal/runtime/test/... \
-		paths=./cmd/clusterctl/... \
-		paths=./internal/test/builder/...
-
-.PHONY: generate-go-deepcopy-kubeadm-bootstrap
-generate-go-deepcopy-kubeadm-bootstrap: $(CONTROLLER_GEN) ## Generate deepcopy go code for kubeadm bootstrap
-	$(MAKE) clean-generated-deepcopy SRC_DIRS="./bootstrap/kubeadm/api,./bootstrap/kubeadm/types"
-	$(CONTROLLER_GEN) \
-		object:headerFile=./hack/boilerplate/boilerplate.generatego.txt \
-		paths=./bootstrap/kubeadm/api/... \
-		paths=./bootstrap/kubeadm/types/...
-
-.PHONY: generate-go-deepcopy-kubeadm-control-plane
-generate-go-deepcopy-kubeadm-control-plane: $(CONTROLLER_GEN) ## Generate deepcopy go code for kubeadm control plane
-	$(MAKE) clean-generated-deepcopy SRC_DIRS="./controlplane/kubeadm/api"
-	$(CONTROLLER_GEN) \
-		object:headerFile=./hack/boilerplate/boilerplate.generatego.txt \
-		paths=./controlplane/kubeadm/api/...
-
-.PHONY: generate-go-deepcopy-docker-infrastructure
-generate-go-deepcopy-docker-infrastructure: $(CONTROLLER_GEN) ## Generate deepcopy go code for docker infrastructure provider
-	$(MAKE) clean-generated-deepcopy SRC_DIRS="$(CAPD_DIR)/api,$(CAPD_DIR)/$(EXP_DIR)/api"
-	cd $(CAPD_DIR); $(CONTROLLER_GEN) \
-		object:headerFile=../../../hack/boilerplate/boilerplate.generatego.txt \
-		paths=./api/... \
-		paths=./$(EXP_DIR)/api/...
 
 .PHONY: generate-go-deepcopy-in-memory-infrastructure
 generate-go-deepcopy-in-memory-infrastructure: $(CONTROLLER_GEN) ## Generate deepcopy go code for in-memory infrastructure provider
@@ -429,131 +304,13 @@ generate-go-deepcopy-in-memory-infrastructure: $(CONTROLLER_GEN) ## Generate dee
 		paths=./api/... \
         paths=./internal/cloud/api/...
 
-.PHONY: generate-go-deepcopy-test-extension
-generate-go-deepcopy-test-extension: $(CONTROLLER_GEN) ## Generate deepcopy go code for test-extension
-
 .PHONY: generate-go-conversions
 generate-go-conversions: ## Run all generate-go-conversions-* targets
 	$(MAKE) $(addprefix generate-go-conversions-,$(ALL_GENERATE_MODULES))
 
-.PHONY: generate-go-conversions-core
-generate-go-conversions-core: ## Run all generate-go-conversions-core-* targets
-	$(MAKE) generate-go-conversions-core-api
-	$(MAKE) generate-go-conversions-core-exp
-	$(MAKE) generate-go-conversions-core-exp-ipam
-	$(MAKE) generate-go-conversions-core-runtime
-
-.PHONY: generate-go-conversions-core-api
-generate-go-conversions-core-api: $(CONVERSION_GEN) ## Generate conversions go code for core api
-	$(MAKE) clean-generated-conversions SRC_DIRS="./internal/apis/core/v1alpha3,./internal/apis/core/v1alpha4"
-	$(CONVERSION_GEN) \
-		--input-dirs=./internal/apis/core/v1alpha3 \
-		--input-dirs=./internal/apis/core/v1alpha4 \
-		--build-tag=ignore_autogenerated_core \
-		--output-file-base=zz_generated.conversion $(CONVERSION_GEN_OUTPUT_BASE) \
-		--go-header-file=./hack/boilerplate/boilerplate.generatego.txt
-
-.PHONY: generate-go-conversions-core-exp
-generate-go-conversions-core-exp: $(CONVERSION_GEN) ## Generate conversions go code for core exp
-	$(MAKE) clean-generated-conversions SRC_DIRS="./internal/apis/core/exp/v1alpha3,./internal/apis/core/exp/addons/v1alpha3,./internal/apis/core/exp/v1alpha4,./internal/apis/core/exp/addons/v1alpha4"
-	$(CONVERSION_GEN) \
-		--input-dirs=./internal/apis/core/exp/v1alpha3 \
-		--input-dirs=./internal/apis/core/exp/v1alpha4 \
-		--input-dirs=./internal/apis/core/exp/addons/v1alpha3 \
-		--input-dirs=./internal/apis/core/exp/addons/v1alpha4 \
-		--build-tag=ignore_autogenerated_core_exp \
-		--extra-peer-dirs=sigs.k8s.io/cluster-api/internal/apis/core/v1alpha3 \
-		--extra-peer-dirs=sigs.k8s.io/cluster-api/internal/apis/core/v1alpha4 \
-		--output-file-base=zz_generated.conversion $(CONVERSION_GEN_OUTPUT_BASE) \
-		--go-header-file=./hack/boilerplate/boilerplate.generatego.txt
-
-.PHONY: generate-go-conversions-core-exp-ipam
-generate-go-conversions-core-exp-ipam: $(CONVERSION_GEN) ## Generate conversions go code for core exp IPAM
-	$(MAKE) clean-generated-conversions SRC_DIRS="./$(EXP_DIR)/ipam/api/v1alpha1"
-	$(CONVERSION_GEN) \
-		--input-dirs=./$(EXP_DIR)/ipam/api/v1alpha1 \
-		--build-tag=ignore_autogenerated_core_exp_ipam \
-		--output-file-base=zz_generated.conversion $(CONVERSION_GEN_OUTPUT_BASE) \
-		--go-header-file=./hack/boilerplate/boilerplate.generatego.txt
-
-.PHONY: generate-go-conversions-core-runtime
-generate-go-conversions-core-runtime: $(CONVERSION_GEN) ## Generate conversions go code for core runtime
-	$(MAKE) clean-generated-conversions SRC_DIRS="./internal/runtime/test/v1alpha1,./internal/runtime/test/v1alpha2"
-	$(CONVERSION_GEN) \
-		--input-dirs=./internal/runtime/test/v1alpha1 \
-		--input-dirs=./internal/runtime/test/v1alpha2 \
-		--build-tag=ignore_autogenerated_core_runtime \
-		--output-file-base=zz_generated.conversion $(CONVERSION_GEN_OUTPUT_BASE) \
-		--go-header-file=./hack/boilerplate/boilerplate.generatego.txt
-
-.PHONY: generate-go-conversions-kubeadm-bootstrap
-generate-go-conversions-kubeadm-bootstrap: $(CONVERSION_GEN) ## Generate conversions go code for kubeadm bootstrap
-	$(MAKE) clean-generated-conversions SRC_DIRS="./internal/apis/bootstrap/kubeadm"
-	$(CONVERSION_GEN) \
-		--input-dirs=./internal/apis/bootstrap/kubeadm/v1alpha3 \
-		--input-dirs=./internal/apis/bootstrap/kubeadm/v1alpha4 \
-		--build-tag=ignore_autogenerated_kubeadm_bootstrap \
-		--extra-peer-dirs=sigs.k8s.io/cluster-api/internal/apis/core/v1alpha3 \
-		--extra-peer-dirs=sigs.k8s.io/cluster-api/internal/apis/core/v1alpha4 \
-		--output-file-base=zz_generated.conversion $(CONVERSION_GEN_OUTPUT_BASE) \
-		--go-header-file=./hack/boilerplate/boilerplate.generatego.txt
-	$(MAKE) clean-generated-conversions SRC_DIRS="./bootstrap/kubeadm/types/upstreamv1beta2,./bootstrap/kubeadm/types/upstreamv1beta3"
-	$(CONVERSION_GEN) \
-		--input-dirs=./bootstrap/kubeadm/types/upstreamv1beta2 \
-		--input-dirs=./bootstrap/kubeadm/types/upstreamv1beta3 \
-		--build-tag=ignore_autogenerated_kubeadm_types \
-		--output-file-base=zz_generated.conversion $(CONVERSION_GEN_OUTPUT_BASE) \
-		--go-header-file=./hack/boilerplate/boilerplate.generatego.txt
-
-.PHONY: generate-go-conversions-kubeadm-control-plane
-generate-go-conversions-kubeadm-control-plane: $(CONVERSION_GEN) ## Generate conversions go code for kubeadm control plane
-	$(MAKE) clean-generated-conversions SRC_DIRS="./internal/apis/controlplane/kubeadm"
-	$(CONVERSION_GEN) \
-		--input-dirs=./internal/apis/controlplane/kubeadm/v1alpha3 \
-		--input-dirs=./internal/apis/controlplane/kubeadm/v1alpha4 \
-		--build-tag=ignore_autogenerated_kubeadm_controlplane \
-		--extra-peer-dirs=sigs.k8s.io/cluster-api/internal/apis/core/v1alpha3 \
-		--extra-peer-dirs=sigs.k8s.io/cluster-api/internal/apis/core/v1alpha4 \
-		--extra-peer-dirs=sigs.k8s.io/cluster-api/internal/apis/bootstrap/kubeadm/v1alpha3 \
-		--extra-peer-dirs=sigs.k8s.io/cluster-api/internal/apis/bootstrap/kubeadm/v1alpha4 \
-		--output-file-base=zz_generated.conversion $(CONVERSION_GEN_OUTPUT_BASE) \
-		--go-header-file=./hack/boilerplate/boilerplate.generatego.txt
-
-.PHONY: generate-go-conversions-docker-infrastructure
-generate-go-conversions-docker-infrastructure: $(CONVERSION_GEN) ## Generate conversions go code for docker infrastructure provider
-	cd $(CAPD_DIR); $(CONVERSION_GEN) \
-		--input-dirs=./api/v1alpha3 \
-		--input-dirs=./api/v1alpha4 \
-		--input-dirs=./$(EXP_DIR)/api/v1alpha3 \
-		--input-dirs=./$(EXP_DIR)/api/v1alpha4 \
-		--build-tag=ignore_autogenerated_capd \
-		--extra-peer-dirs=sigs.k8s.io/cluster-api/internal/apis/core/v1alpha3 \
-		--extra-peer-dirs=sigs.k8s.io/cluster-api/internal/apis/core/v1alpha4 \
-		--output-file-base=zz_generated.conversion $(CONVERSION_GEN_OUTPUT_BASE_CAPD) \
-		--go-header-file=../../../hack/boilerplate/boilerplate.generatego.txt
-
 .PHONY: generate-go-conversions-in-memory-infrastructure
 generate-go-conversions-in-memory-infrastructure: $(CONVERSION_GEN) ## Generate conversions go code for in-memory infrastructure provider
 	cd $(CAPIM_DIR)
-
-.PHONY: generate-go-conversions-test-extension
-generate-go-conversions-test-extension: $(CONVERSION_GEN) ## Generate conversions go code for in-memory infrastructure provider
-
-# The tmp/sigs.k8s.io/cluster-api symlink is a workaround to make this target run outside of GOPATH
-.PHONY: generate-go-openapi
-generate-go-openapi: $(OPENAPI_GEN) $(CONTROLLER_GEN) ## Generate openapi go code for runtime SDK
-	@mkdir -p ./tmp/sigs.k8s.io; ln -s $(ROOT_DIR) ./tmp/sigs.k8s.io/; cd ./tmp; \
-	for pkg in "api/v1beta1" "$(EXP_DIR)/runtime/hooks/api/v1alpha1"; do \
-		(cd ../ && $(MAKE) clean-generated-openapi-definitions SRC_DIRS="./$${pkg}"); \
-		echo "** Generating openapi schema for types in ./$${pkg} **"; \
-		$(OPENAPI_GEN) \
-			--output-dir=../$${pkg} \
-			--output-file=zz_generated.openapi.go \
-			--output-pkg=sigs.k8s.io/cluster-api/$${pkg} \
-			--go-header-file=../hack/boilerplate/boilerplate.generatego.txt \
-			sigs.k8s.io/cluster-api/$${pkg}; \
-	done; \
-	rm sigs.k8s.io/cluster-api
 
 .PHONY: generate-modules
 generate-modules: ## Run go mod tidy to ensure modules are up to date
@@ -561,95 +318,15 @@ generate-modules: ## Run go mod tidy to ensure modules are up to date
 	cd $(TOOLS_DIR); go mod tidy
 	cd $(TEST_DIR); go mod tidy
 
-.PHONY: generate-doctoc
-generate-doctoc:
-	TRACE=$(TRACE) ./hack/generate-doctoc.sh
-
 .PHONY: generate-e2e-templates
-generate-e2e-templates: $(KUSTOMIZE) $(addprefix generate-e2e-templates-, v0.3 v0.4 v1.0 v1.5 v1.6 main) ## Generate cluster templates for all versions
+generate-e2e-templates: $(KUSTOMIZE) $(addprefix generate-e2e-templates-, main) ## Generate cluster templates for all versions
 
-DOCKER_TEMPLATES := test/e2e/data/infrastructure-docker
 INMEMORY_TEMPLATES := test/e2e/data/infrastructure-inmemory
 
-.PHONY: generate-e2e-templates-v0.3
-generate-e2e-templates-v0.3: $(KUSTOMIZE)
-	$(KUSTOMIZE) build $(DOCKER_TEMPLATES)/v0.3/cluster-template --load-restrictor LoadRestrictionsNone > $(DOCKER_TEMPLATES)/v0.3/cluster-template.yaml
-
-.PHONY: generate-e2e-templates-v0.4
-generate-e2e-templates-v0.4: $(KUSTOMIZE)
-	$(KUSTOMIZE) build $(DOCKER_TEMPLATES)/v0.4/cluster-template --load-restrictor LoadRestrictionsNone > $(DOCKER_TEMPLATES)/v0.4/cluster-template.yaml
-
-.PHONY: generate-e2e-templates-v1.0
-generate-e2e-templates-v1.0: $(KUSTOMIZE)
-	$(KUSTOMIZE) build $(DOCKER_TEMPLATES)/v1.0/cluster-template --load-restrictor LoadRestrictionsNone > $(DOCKER_TEMPLATES)/v1.0/cluster-template.yaml
-
-.PHONY: generate-e2e-templates-v1.5
-generate-e2e-templates-v1.5: $(KUSTOMIZE)
-	$(KUSTOMIZE) build $(DOCKER_TEMPLATES)/v1.5/cluster-template --load-restrictor LoadRestrictionsNone > $(DOCKER_TEMPLATES)/v1.5/cluster-template.yaml
-	$(KUSTOMIZE) build $(DOCKER_TEMPLATES)/v1.5/cluster-template-topology --load-restrictor LoadRestrictionsNone > $(DOCKER_TEMPLATES)/v1.5/cluster-template-topology.yaml
-
-.PHONY: generate-e2e-templates-v1.6
-generate-e2e-templates-v1.6: $(KUSTOMIZE)
-	$(KUSTOMIZE) build $(DOCKER_TEMPLATES)/v1.6/cluster-template --load-restrictor LoadRestrictionsNone > $(DOCKER_TEMPLATES)/v1.6/cluster-template.yaml
-	$(KUSTOMIZE) build $(DOCKER_TEMPLATES)/v1.6/cluster-template-topology --load-restrictor LoadRestrictionsNone > $(DOCKER_TEMPLATES)/v1.6/cluster-template-topology.yaml
-
 .PHONY: generate-e2e-templates-main
+
 generate-e2e-templates-main: $(KUSTOMIZE)
-	$(KUSTOMIZE) build $(DOCKER_TEMPLATES)/main/cluster-template --load-restrictor LoadRestrictionsNone > $(DOCKER_TEMPLATES)/main/cluster-template.yaml
-	$(KUSTOMIZE) build $(DOCKER_TEMPLATES)/main/cluster-template-md-remediation --load-restrictor LoadRestrictionsNone > $(DOCKER_TEMPLATES)/main/cluster-template-md-remediation.yaml
-	$(KUSTOMIZE) build $(DOCKER_TEMPLATES)/main/cluster-template-kcp-remediation --load-restrictor LoadRestrictionsNone > $(DOCKER_TEMPLATES)/main/cluster-template-kcp-remediation.yaml
-	$(KUSTOMIZE) build $(DOCKER_TEMPLATES)/main/cluster-template-kcp-adoption/step1 --load-restrictor LoadRestrictionsNone > $(DOCKER_TEMPLATES)/main/cluster-template-kcp-adoption.yaml
-	echo "---" >> $(DOCKER_TEMPLATES)/main/cluster-template-kcp-adoption.yaml
-	$(KUSTOMIZE) build $(DOCKER_TEMPLATES)/main/cluster-template-kcp-adoption/step2 --load-restrictor LoadRestrictionsNone >> $(DOCKER_TEMPLATES)/main/cluster-template-kcp-adoption.yaml
-	$(KUSTOMIZE) build $(DOCKER_TEMPLATES)/main/cluster-template-machine-pool --load-restrictor LoadRestrictionsNone > $(DOCKER_TEMPLATES)/main/cluster-template-machine-pool.yaml
-	$(KUSTOMIZE) build $(DOCKER_TEMPLATES)/main/cluster-template-node-drain --load-restrictor LoadRestrictionsNone > $(DOCKER_TEMPLATES)/main/cluster-template-node-drain.yaml
-	$(KUSTOMIZE) build $(DOCKER_TEMPLATES)/main/cluster-template-upgrades --load-restrictor LoadRestrictionsNone > $(DOCKER_TEMPLATES)/main/cluster-template-upgrades.yaml
-	$(KUSTOMIZE) build $(DOCKER_TEMPLATES)/main/cluster-template-upgrades-runtimesdk --load-restrictor LoadRestrictionsNone > $(DOCKER_TEMPLATES)/main/cluster-template-upgrades-runtimesdk.yaml
-	$(KUSTOMIZE) build $(DOCKER_TEMPLATES)/main/cluster-template-kcp-scale-in --load-restrictor LoadRestrictionsNone > $(DOCKER_TEMPLATES)/main/cluster-template-kcp-scale-in.yaml
-	$(KUSTOMIZE) build $(DOCKER_TEMPLATES)/main/cluster-template-ipv6 --load-restrictor LoadRestrictionsNone > $(DOCKER_TEMPLATES)/main/cluster-template-ipv6.yaml
-	$(KUSTOMIZE) build $(DOCKER_TEMPLATES)/main/cluster-template-topology-dualstack-ipv6-primary --load-restrictor LoadRestrictionsNone > $(DOCKER_TEMPLATES)/main/cluster-template-topology-dualstack-ipv6-primary.yaml
-	$(KUSTOMIZE) build $(DOCKER_TEMPLATES)/main/cluster-template-topology-dualstack-ipv4-primary --load-restrictor LoadRestrictionsNone > $(DOCKER_TEMPLATES)/main/cluster-template-topology-dualstack-ipv4-primary.yaml
-	$(KUSTOMIZE) build $(DOCKER_TEMPLATES)/main/cluster-template-topology-single-node-cluster --load-restrictor LoadRestrictionsNone > $(DOCKER_TEMPLATES)/main/cluster-template-topology-single-node-cluster.yaml
-	$(KUSTOMIZE) build $(DOCKER_TEMPLATES)/main/cluster-template-topology-autoscaler --load-restrictor LoadRestrictionsNone > $(DOCKER_TEMPLATES)/main/cluster-template-topology-autoscaler.yaml
-	$(KUSTOMIZE) build $(DOCKER_TEMPLATES)/main/cluster-template-topology --load-restrictor LoadRestrictionsNone > $(DOCKER_TEMPLATES)/main/cluster-template-topology.yaml
-	$(KUSTOMIZE) build $(DOCKER_TEMPLATES)/main/cluster-template-ignition --load-restrictor LoadRestrictionsNone > $(DOCKER_TEMPLATES)/main/cluster-template-ignition.yaml
-
 	$(KUSTOMIZE) build $(INMEMORY_TEMPLATES)/main/cluster-template --load-restrictor LoadRestrictionsNone > $(INMEMORY_TEMPLATES)/main/cluster-template.yaml
-
-.PHONY: generate-metrics-config
-generate-metrics-config: $(ENVSUBST_BIN) ## Generate ./config/metrics/crd-metrics-config.yaml
-	OUTPUT_FILE="./config/metrics/crd-metrics-config.yaml"; \
-	METRIC_TEMPLATES_DIR="./config/metrics/templates"; \
-	echo "# This file was auto-generated via: make generate-metrics-config" > "$${OUTPUT_FILE}"; \
-	cat "$${METRIC_TEMPLATES_DIR}/header.yaml" >> "$${OUTPUT_FILE}"; \
-	for resource in clusterclass cluster kubeadmcontrolplane kubeadmconfig machine machinedeployment machinehealthcheck machineset machinepool; do \
-		cat "$${METRIC_TEMPLATES_DIR}/$${resource}.yaml"; \
-		RESOURCE="$${resource}" ${ENVSUBST_BIN} < "$${METRIC_TEMPLATES_DIR}/common_metrics.yaml"; \
-		if [[ "$${resource}" != "cluster" ]]; then \
-			cat "$${METRIC_TEMPLATES_DIR}/owner_metric.yaml"; \
-		fi \
-	done >> "$${OUTPUT_FILE}"; \
-
-.PHONY: generate-diagrams
-generate-diagrams: ## Generate diagrams for *.plantuml files
-	$(MAKE) generate-diagrams-book
-	$(MAKE) generate-diagrams-proposals
-
-.PHONY: generate-diagrams-book
-generate-diagrams-book: ## Generate diagrams for *.plantuml files in book
-	docker run -v $(ROOT_DIR)/$(DOCS_DIR):/$(DOCS_DIR)$(DOCKER_VOL_OPTS)  plantuml/plantuml:$(PLANTUML_VER) /$(DOCS_DIR)/book/**/*.plantuml
-
-.PHONY: generate-diagrams-proposals
-generate-diagrams-proposals: ## Generate diagrams for *.plantuml files in proposals
-	docker run -v $(ROOT_DIR)/$(DOCS_DIR):/$(DOCS_DIR)$(DOCKER_VOL_OPTS)  plantuml/plantuml:$(PLANTUML_VER) /$(DOCS_DIR)/proposals/**/*.plantuml
-
-.PHONY: generate-test-infra-prowjobs
-generate-test-infra-prowjobs: $(PROWJOB_GEN) ## Generates the prowjob configurations in test-infra
-	@if [ -z "${TEST_INFRA_DIR}" ]; then echo "TEST_INFRA_DIR is not set"; exit 1; fi
-	$(PROWJOB_GEN) \
-		-config "$(TEST_INFRA_DIR)/config/jobs/kubernetes-sigs/cluster-api/cluster-api-prowjob-gen.yaml" \
-		-templates-dir "$(TEST_INFRA_DIR)/config/jobs/kubernetes-sigs/cluster-api/templates" \
-		-output-dir "$(TEST_INFRA_DIR)/config/jobs/kubernetes-sigs/cluster-api"
 
 ## --------------------------------------
 ## Lint / Verify
