@@ -19,6 +19,7 @@ package v1alpha1
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
+	corev1 "k8s.io/api/core/v1"
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 )
 
@@ -146,6 +147,9 @@ type InMemoryMachineStatus struct {
 	// Conditions defines current service state of the InMemoryMachine.
 	// +optional
 	Conditions clusterv1.Conditions `json:"conditions,omitempty"`
+
+	// Addresses contains the InMemoryMachine associated addresses.
+	Addresses []corev1.NodeAddress `json:"addresses,omitempty"`
 }
 
 // +kubebuilder:resource:path=inmemorymachines,scope=Namespaced,categories=cluster-api
