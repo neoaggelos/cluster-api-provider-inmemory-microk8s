@@ -21,8 +21,8 @@ import (
 
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	inmemorycache "sigs.k8s.io/cluster-api/test/infrastructure/inmemory/pkg/runtime/cache"
-	inmemoryclient "sigs.k8s.io/cluster-api/test/infrastructure/inmemory/pkg/runtime/client"
+	inmemorycache "github.com/neoaggelos/cluster-api-provider-inmemory-microk8s/test/infrastructure/inmemory/pkg/runtime/cache"
+	inmemoryclient "github.com/neoaggelos/cluster-api-provider-inmemory-microk8s/test/infrastructure/inmemory/pkg/runtime/client"
 )
 
 var _ ResourceGroup = &cachedResourceGroup{}

@@ -49,8 +49,8 @@ import (
 	"k8s.io/client-go/tools/portforward"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	inmemoryruntime "sigs.k8s.io/cluster-api/test/infrastructure/inmemory/pkg/runtime"
-	inmemoryportforward "sigs.k8s.io/cluster-api/test/infrastructure/inmemory/pkg/server/api/portforward"
+	inmemoryruntime "github.com/neoaggelos/cluster-api-provider-inmemory-microk8s/test/infrastructure/inmemory/pkg/runtime"
+	inmemoryportforward "github.com/neoaggelos/cluster-api-provider-inmemory-microk8s/test/infrastructure/inmemory/pkg/server/api/portforward"
 )
 
 // ResourceGroupResolver defines a func that can identify which workloadCluster/resourceGroup a

@@ -38,10 +38,10 @@ import (
 	"k8s.io/klog/v2"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	infrav1 "sigs.k8s.io/cluster-api/test/infrastructure/inmemory/api/v1alpha1"
-	inmemoryruntime "sigs.k8s.io/cluster-api/test/infrastructure/inmemory/pkg/runtime"
-	inmemoryapi "sigs.k8s.io/cluster-api/test/infrastructure/inmemory/pkg/server/api"
-	inmemoryetcd "sigs.k8s.io/cluster-api/test/infrastructure/inmemory/pkg/server/etcd"
+	infrav1 "github.com/neoaggelos/cluster-api-provider-inmemory-microk8s/test/infrastructure/inmemory/api/v1alpha1"
+	inmemoryruntime "github.com/neoaggelos/cluster-api-provider-inmemory-microk8s/test/infrastructure/inmemory/pkg/runtime"
+	inmemoryapi "github.com/neoaggelos/cluster-api-provider-inmemory-microk8s/test/infrastructure/inmemory/pkg/server/api"
+	inmemoryetcd "github.com/neoaggelos/cluster-api-provider-inmemory-microk8s/test/infrastructure/inmemory/pkg/server/etcd"
 	"sigs.k8s.io/cluster-api/util/certs"
 )
 

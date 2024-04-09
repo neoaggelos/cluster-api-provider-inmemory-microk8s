@@ -33,7 +33,7 @@ import (
 	"k8s.io/klog/v2"
 	ctrl "sigs.k8s.io/controller-runtime"
 
-	cloudv1 "sigs.k8s.io/cluster-api/test/infrastructure/inmemory/internal/cloud/api/v1alpha1"
+	cloudv1 "github.com/neoaggelos/cluster-api-provider-inmemory-microk8s/test/infrastructure/inmemory/internal/cloud/api/v1alpha1"
 )
 
 var scheme = runtime.NewScheme()

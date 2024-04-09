@@ -32,10 +32,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 
+	infrav1 "github.com/neoaggelos/cluster-api-provider-inmemory-microk8s/test/infrastructure/inmemory/api/v1alpha1"
+	inmemoryruntime "github.com/neoaggelos/cluster-api-provider-inmemory-microk8s/test/infrastructure/inmemory/pkg/runtime"
+	inmemoryserver "github.com/neoaggelos/cluster-api-provider-inmemory-microk8s/test/infrastructure/inmemory/pkg/server"
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
-	infrav1 "sigs.k8s.io/cluster-api/test/infrastructure/inmemory/api/v1alpha1"
-	inmemoryruntime "sigs.k8s.io/cluster-api/test/infrastructure/inmemory/pkg/runtime"
-	inmemoryserver "sigs.k8s.io/cluster-api/test/infrastructure/inmemory/pkg/server"
 	"sigs.k8s.io/cluster-api/util"
 	"sigs.k8s.io/cluster-api/util/patch"
 	"sigs.k8s.io/cluster-api/util/predicates"

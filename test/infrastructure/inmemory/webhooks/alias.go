@@ -20,7 +20,7 @@ package webhooks
 import (
 	ctrl "sigs.k8s.io/controller-runtime"
 
-	"sigs.k8s.io/cluster-api/test/infrastructure/inmemory/internal/webhooks"
+	"github.com/neoaggelos/cluster-api-provider-inmemory-microk8s/test/infrastructure/inmemory/internal/webhooks"
 )
 
 // InMemoryCluster implements a validating and defaulting webhook for InMemoryCluster.

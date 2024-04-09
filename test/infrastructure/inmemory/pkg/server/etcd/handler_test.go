@@ -31,8 +31,8 @@ import (
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	cloudv1 "sigs.k8s.io/cluster-api/test/infrastructure/inmemory/internal/cloud/api/v1alpha1"
-	inmemoryruntime "sigs.k8s.io/cluster-api/test/infrastructure/inmemory/pkg/runtime"
+	cloudv1 "github.com/neoaggelos/cluster-api-provider-inmemory-microk8s/test/infrastructure/inmemory/internal/cloud/api/v1alpha1"
+	inmemoryruntime "github.com/neoaggelos/cluster-api-provider-inmemory-microk8s/test/infrastructure/inmemory/pkg/runtime"
 )
 
 func Test_etcd_scalingflow(t *testing.T) {

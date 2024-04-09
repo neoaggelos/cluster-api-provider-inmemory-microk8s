@@ -19,8 +19,8 @@ package runtime
 import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	inmemoryclient "sigs.k8s.io/cluster-api/test/infrastructure/inmemory/pkg/runtime/client"
-	inmemorymanager "sigs.k8s.io/cluster-api/test/infrastructure/inmemory/pkg/runtime/manager"
+	inmemoryclient "github.com/neoaggelos/cluster-api-provider-inmemory-microk8s/test/infrastructure/inmemory/pkg/runtime/client"
+	inmemorymanager "github.com/neoaggelos/cluster-api-provider-inmemory-microk8s/test/infrastructure/inmemory/pkg/runtime/manager"
 )
 
 // Client knows how to perform CRUD operations on resources in a resource group.

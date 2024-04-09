@@ -23,8 +23,8 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 
-	inmemorycache "sigs.k8s.io/cluster-api/test/infrastructure/inmemory/pkg/runtime/cache"
-	inmemoryresoucegroup "sigs.k8s.io/cluster-api/test/infrastructure/inmemory/pkg/runtime/resourcegroup"
+	inmemorycache "github.com/neoaggelos/cluster-api-provider-inmemory-microk8s/test/infrastructure/inmemory/pkg/runtime/cache"
+	inmemoryresoucegroup "github.com/neoaggelos/cluster-api-provider-inmemory-microk8s/test/infrastructure/inmemory/pkg/runtime/resourcegroup"
 )
 
 // Manager initializes shared dependencies such as Caches and Clients.

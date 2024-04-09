@@ -24,9 +24,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
 
-	inmemorycontrollers "sigs.k8s.io/cluster-api/test/infrastructure/inmemory/internal/controllers"
-	inmemoryruntime "sigs.k8s.io/cluster-api/test/infrastructure/inmemory/pkg/runtime"
-	inmemoryserver "sigs.k8s.io/cluster-api/test/infrastructure/inmemory/pkg/server"
+	inmemorycontrollers "github.com/neoaggelos/cluster-api-provider-inmemory-microk8s/test/infrastructure/inmemory/internal/controllers"
+	inmemoryruntime "github.com/neoaggelos/cluster-api-provider-inmemory-microk8s/test/infrastructure/inmemory/pkg/runtime"
+	inmemoryserver "github.com/neoaggelos/cluster-api-provider-inmemory-microk8s/test/infrastructure/inmemory/pkg/server"
 )
 
 // Following types provides access to reconcilers implemented in internal/controllers, thus
