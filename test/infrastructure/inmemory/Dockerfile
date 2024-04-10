@@ -36,12 +36,6 @@ ENV GOPROXY=$goproxy
 COPY go.mod go.mod
 COPY go.sum go.sum
 
-# Essentially, change directories into the test go module
-WORKDIR /workspace/test
-# Copy the Go Modules manifests
-COPY test/go.mod go.mod
-COPY test/go.sum go.sum
-
 # Cache deps before building and copying source so that we don't need to re-download as much
 # and so that source changes don't invalidate our downloaded layer
 RUN --mount=type=cache,target=/go/pkg/mod \
@@ -50,15 +44,12 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 # This needs to build with the entire Cluster API context
 WORKDIR /workspace
 # Copy the sources (which includes the test/infrastructure/inmemory subdirectory)
-COPY ./ ./
-
-# Essentially, change directories into CAPIM
-WORKDIR /workspace/test/infrastructure/inmemory
+COPY test /workspace/test
 
 # Cache the go build into the Go’s compiler cache folder so we take benefits of compiler caching across docker build calls
 RUN --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/go/pkg/mod \
-    go build .
+    go build ./test/infrastructure/inmemory
 
 # Build
 ARG ARCH
@@ -69,7 +60,7 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/go/pkg/mod \
     CGO_ENABLED=0 GOOS=linux GOARCH=${ARCH} \
     go build -trimpath -ldflags "${ldflags} -extldflags '-static'" \
-    -o /workspace/manager .
+    -o /workspace/manager ./test/infrastructure/inmemory
 
 
 FROM gcr.io/distroless/static:nonroot-${ARCH}
