@@ -55,7 +55,7 @@ const (
 	// DefaultMinPort default min port of the workload clusters mux.
 	DefaultMinPort = 20000
 	// DefaultMaxPort default max port of the workload clusters mux.
-	DefaultMaxPort = 24000
+	DefaultMaxPort = 50000
 )
 
 // WorkloadClustersMuxOption define an option for the WorkloadClustersMux creation.
