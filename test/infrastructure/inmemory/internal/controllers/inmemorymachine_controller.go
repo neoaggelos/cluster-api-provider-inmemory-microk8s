@@ -175,6 +175,21 @@ func (r *InMemoryMachineReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 		return ctrl.Result{}, nil
 	}
 
+	// NOTE(neoaggelos): microk8s
+	inMemoryMachine.Status.Addresses = nil
+	if inMemoryCluster.Spec.AddMachineHostname {
+		inMemoryMachine.Status.Addresses = append(inMemoryMachine.Status.Addresses, corev1.NodeAddress{
+			Type:    corev1.NodeHostName,
+			Address: inMemoryMachine.Name,
+		})
+	}
+	if inMemoryCluster.Spec.AddMachineInternalIP {
+		inMemoryMachine.Status.Addresses = append(inMemoryMachine.Status.Addresses, corev1.NodeAddress{
+			Type:    corev1.NodeInternalIP,
+			Address: "10.0.0.100",
+		})
+	}
+
 	// Handle non-deleted machines
 	return r.reconcileNormal(ctx, cluster, machine, inMemoryMachine)
 }
@@ -286,8 +301,6 @@ func (r *InMemoryMachineReconciler) reconcileNormalCloudMachine(ctx context.Cont
 	inMemoryMachine.Spec.ProviderID = ptr.To(calculateProviderID(inMemoryMachine))
 	inMemoryMachine.Status.Ready = true
 
-	// TODO: set inMemory.Status.Addresses with some addresses
-
 	conditions.MarkTrue(inMemoryMachine, infrav1.VMProvisionedCondition)
 	return ctrl.Result{}, nil
 }
@@ -342,6 +355,8 @@ func (r *InMemoryMachineReconciler) reconcileNormalNode(ctx context.Context, clu
 					Status: corev1.ConditionTrue,
 				},
 			},
+			// NOTE(neoaggelos): microk8s
+			Addresses: inMemoryMachine.Status.Addresses,
 		},
 	}
 	if util.IsControlPlaneMachine(machine) {
@@ -349,6 +364,9 @@ func (r *InMemoryMachineReconciler) reconcileNormalNode(ctx context.Context, clu
 			node.Labels = map[string]string{}
 		}
 		node.Labels["node-role.kubernetes.io/control-plane"] = ""
+
+		// NOTE(neoaggelos): microk8s
+		node.Labels["node.kubernetes.io/microk8s-controlplane"] = "node.kubernetes.io/microk8s-controlplane"
 	}
 
 	if err := inmemoryClient.Get(ctx, client.ObjectKeyFromObject(node), node); err != nil {

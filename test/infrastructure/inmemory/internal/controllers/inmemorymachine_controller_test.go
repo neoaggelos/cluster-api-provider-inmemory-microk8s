@@ -174,6 +174,16 @@ func TestReconcileNormalNode(t *testing.T) {
 					LastTransitionTime: metav1.Now(),
 				},
 			},
+			Addresses: []corev1.NodeAddress{
+				{
+					Type:    corev1.NodeHostName,
+					Address: "bar",
+				},
+				{
+					Type:    corev1.NodeInternalIP,
+					Address: "10.0.0.100",
+				},
+			},
 		},
 	}
 
@@ -238,6 +248,12 @@ func TestReconcileNormalNode(t *testing.T) {
 
 			g.Expect(conditions.IsTrue(inMemoryMachineWithVMProvisioned, infrav1.NodeProvisionedCondition)).To(BeTrue())
 			g.Expect(conditions.Get(inMemoryMachineWithVMProvisioned, infrav1.NodeProvisionedCondition).LastTransitionTime.Time).To(BeTemporally(">", conditions.Get(inMemoryMachineWithVMProvisioned, infrav1.VMProvisionedCondition).LastTransitionTime.Time, inMemoryMachineWithVMProvisioned.Spec.Behaviour.Node.Provisioning.StartupDuration.Duration))
+
+			// NOTE(neoaggelos): microk8s
+			g.Expect(got.Status.Addresses).To(Equal(inMemoryMachineWithVMProvisioned.Status.Addresses))
+			_, ok := got.Labels["node.kubernetes.io/microk8s-controlplane"]
+			g.Expect(ok).To(BeTrue())
+
 		})
 
 		t.Run("no-op after it is provisioned", func(t *testing.T) {
