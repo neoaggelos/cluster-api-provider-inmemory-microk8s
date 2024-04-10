@@ -31,3 +31,17 @@ make release-manifests-dev
 # Apply components on cluster
 kubectl apply -f ./out/infrastructure-components-in-memory-development.yaml
 ```
+
+### ClusterAPI init
+
+```bash
+# kubeconfig
+mkdir -p ~/.kube && k8s config > ~/.kube/config
+
+# install clusterctl and initialize clusterAPI components
+sudo snap install clusterctl --edge
+clusterctl init -i - -b microk8s -c microk8s
+
+# install in-memory provider
+kubectl apply -f ./out/infrastructure-components-in-memory-development.yaml
+```
