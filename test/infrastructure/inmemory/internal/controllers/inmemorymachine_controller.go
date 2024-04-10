@@ -223,7 +223,7 @@ func (r *InMemoryMachineReconciler) reconcileNormal(ctx context.Context, cluster
 	phases := []func(ctx context.Context, cluster *clusterv1.Cluster, machine *clusterv1.Machine, inMemoryMachine *infrav1.InMemoryMachine) (ctrl.Result, error){
 		r.reconcileNormalCloudMachine,
 		r.reconcileNormalNode,
-		r.reconcileNormalETCD,
+		// r.reconcileNormalETCD,
 		r.reconcileNormalAPIServer,
 		r.reconcileNormalScheduler,
 		r.reconcileNormalControllerManager,
@@ -984,7 +984,7 @@ func (r *InMemoryMachineReconciler) reconcileDelete(ctx context.Context, cluster
 	phases := []func(ctx context.Context, cluster *clusterv1.Cluster, machine *clusterv1.Machine, inMemoryMachine *infrav1.InMemoryMachine) (ctrl.Result, error){
 		// TODO: revisit order when we implement behaviour for the deletion workflow
 		r.reconcileDeleteNode,
-		r.reconcileDeleteETCD,
+		// r.reconcileDeleteETCD,
 		r.reconcileDeleteAPIServer,
 		r.reconcileDeleteScheduler,
 		r.reconcileDeleteControllerManager,
