@@ -148,7 +148,8 @@ type InMemoryMachineStatus struct {
 	// +optional
 	Conditions clusterv1.Conditions `json:"conditions,omitempty"`
 
-	// Addresses contains the InMemoryMachine associated addresses.
+	// Addresses contains the node addresses of this machine.
+	// +optional
 	Addresses []corev1.NodeAddress `json:"addresses,omitempty"`
 }
 

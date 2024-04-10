@@ -37,6 +37,13 @@ type InMemoryClusterSpec struct {
 	// ControlPlaneEndpoint represents the endpoint used to communicate with the control plane.
 	// +optional
 	ControlPlaneEndpoint APIEndpoint `json:"controlPlaneEndpoint"`
+
+	// AddMachineHostname will add a Hostname node address with the machine name on the InMemoryMachine resources.
+	// +optional
+	AddMachineHostname bool `json:"addMachineHostname"`
+
+	// AddMachineInternalIP will add an InternalIP node address on the InMemoryMachine resources.
+	AddMachineInternalIP bool `json:"addMachineInternalIP"`
 }
 
 // InMemoryClusterStatus defines the observed state of the InMemoryCluster.

@@ -50,6 +50,14 @@ spec:
           spec:
             description: InMemoryClusterSpec defines the desired state of the InMemoryCluster.
             properties:
+              addMachineHostname:
+                description: AddMachineHostname will add a Hostname node address with
+                  the machine name on the InMemoryMachine resources.
+                type: boolean
+              addMachineInternalIP:
+                description: AddMachineInternalIP will add an InternalIP node address
+                  on the InMemoryMachine resources.
+                type: boolean
               controlPlaneEndpoint:
                 description: ControlPlaneEndpoint represents the endpoint used to
                   communicate with the control plane.
@@ -66,6 +74,8 @@ spec:
                 - host
                 - port
                 type: object
+            required:
+            - addMachineInternalIP
             type: object
           status:
             description: InMemoryClusterStatus defines the observed state of the InMemoryCluster.

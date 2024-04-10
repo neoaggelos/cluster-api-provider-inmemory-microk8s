@@ -169,7 +169,7 @@ spec:
             description: InMemoryMachineStatus defines the observed state of InMemoryMachine.
             properties:
               addresses:
-                description: Addresses contains the InMemoryMachine associated addresses.
+                description: Addresses contains the node addresses of this machine.
                 items:
                   description: NodeAddress contains information for the node's address.
                   properties:
